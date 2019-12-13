@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link id="favicon" rel="icon" href="https://glitch.com/edit/favicon-app.ico" type="image/x-icon">
+  <title>Mortgage Calculator</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.15.5/dist/bootstrap-table.min.css">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css"
+    integrity="sha256-aa0xaJgmK/X74WM224KMQeNQC2xYKwlAt08oZqjeF0E=" crossorigin="anonymous" />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      integrity="sha256-+N4/V/SbAFiW1MPBCXnfnP9QSN3+Keu+NlB+0ev/YKQ=" crossorigin="anonymous" />
+
+  <!-- Custom CSS -->
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.3/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+  <!-- jQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+ <!-- Latest compiled and minified JavaScript -->
+  <script src="https://unpkg.com/bootstrap-table@1.15.5/dist/bootstrap-table.min.js"></script>
+  <!-- Latest compiled and minified Locales -->
+  <script src="https://unpkg.com/bootstrap-table@1.15.5/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+  <!-- Bootstrap JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="https://unpkg.com/bootstrap-table@1.15.5/dist/extensions/mobile/bootstrap-table-mobile.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js"
+    integrity="sha256-TQq84xX6vkwR0Qs1qH5ADkP+MvH0W+9E7TdHJsoIQiM=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.15/lodash.min.js"
+      integrity="sha256-VeNaFBVDhoX3H+gJ37DpT/nTuZTdjYro9yBruHjVmoQ=" crossorigin="anonymous"></script>
+
+  <!-- Insert these scripts at the bottom of the HTML, but before you use any Firebase services -->
+
+  <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/7.6.0/firebase-app.js"></script>
+
+  <!-- If you enabled Analytics in your project, add the Firebase SDK for Analytics -->
+  <script src="https://www.gstatic.com/firebasejs/7.6.0/firebase-analytics.js"></script>
+
+  <!-- Add Firebase products that you want to use -->
+  <script src="https://www.gstatic.com/firebasejs/7.6.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.6.0/firebase-firestore.js"></script>
+
+  <!-- Custom JavaScript -->
+  <script src="client.js"></script>
+
+  <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10">
+    <form action="" method="POST" class="form-inline" role="form">
+      <h3><i class="fas fa-home" style="margin-right: 10px"></i>Bond Calculator</h3>
+      <!-- Show Saved Calculations -->
+      <div class="form-group col-xs-12" style="margin-bottom: 10px">
+        <select id="calculation_selection" class="form-control" required="required">
+        </select>
+      </div>
+      <div class="form-group col-sm-3">
+        <div class="input-group">
+          <span class="input-group-addon" >Purchase Price: R</span>
+          <input type="number" class="form-control" id="purchase_price" min=0 placeholder="Purchase Price: R0.00">
+        </div>
+      </div>
+      <div class="form-group col-sm-2">
+        <div class="input-group">
+          <span class="input-group-addon" >Deposit: R</span>
+          <input type="number" class="form-control" id="deposit" min=0 placeholder="Deposit: R0.00">
+        </div>
+      </div>
+      <div class="form-group col-sm-2">
+        <div class="input-group">
+          <span class="input-group-addon"><i class="far fa-calendar-alt" style="margin-right: 5px"></i>Years: </span>
+          <input type="number" class="form-control" id="years" min=0 placeholder="Years: ">
+        </div>
+      </div>
+      <div class="form-group col-sm-3" style="margin-bottom: 10px">
+        <div class="input-group">
+          <span class="input-group-addon" style="width: 50px">Fixed Interest Rate: %</span>
+          <input type="number" class="form-control" id="fixed_interest_rate" min=0
+            placeholder="Fixed Interest Rate: 0%">
+        </div>
+      </div>
+      <!-- Save Calculation -->
+      <div class="col-sm-2" style="margin-bottom: 10px">
+        <button type="submit" class="btn btn-primary " id="calculate_mortgage">Calculate 
+          <i class="fas fa-calculator" style="margin-left: 5px"></i></button>
+      </div>
+      <!-- Save Calculation -->
+      <div class="col-sm-6">
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Calculation name..." id="calculation_name">
+          <span class="input-group-btn">
+            <button class="btn btn-success" type="button" id="save_calculation" data-toggle="modal" data-target="#myModal">
+              Save
+              <i class="fas fa-share" style="margin-left: 5px"></i>
+            </button>
+          </span>
+        </div><!-- /input-group -->
+      </div>
+    </form>
+  </div>
+
+  <div id="result_table" class="col-xs-10 col-sm-10 col-md-10 col-lg-10" style="display: none">
+    <h3><i class="fas fa-chart-line" style="margin-right: 10px"></i>Result</h3>
+
+    <table id="table" data-mobile-responsive="true">
+      <thead>
+        <tr> 
+          <th data-field="years">Period</th>
+          <th data-field="beginning_balance" data-formatter="R %s">Beginning Balance</th>
+          <th data-field="payment_to_bank" data-formatter="R %s">Annual Payment</th>
+          <th data-field="current_loan_amount" data-formatter="R %s">Balance After Deduction </th>
+          <th data-field="amount_paid_to_bank" data-formatter="R %s"> Amount To Bank</th>
+          <th data-field="amount_paid_to_loan" data-formatter="R %s"> Amount To Loan</th>
+          <th data-field="percentage_to_bank" data-formatter="%s%">Percentage To Bank</th>
+          <th data-field="precentage_to_loan" data-formatter="%s%">Percentage Towards Loan</th>
+          </tr>
+      </thead>
+    </table>
+    <canvas id="canvas" width="400" height="400"></canvas>
+  </div>
+</body>
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Calculation Saved!</h4>
+      </div>
+    </div>
+  </div>
+</div>
+</html>
